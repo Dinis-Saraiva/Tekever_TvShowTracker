@@ -12,5 +12,15 @@ namespace TvShowTracker.Api.Data
         public DbSet<TvShow> TvShows { get; set; }
         public DbSet<Actor> Actors { get; set; }
         public DbSet<Episode> Episodes { get; set; }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<ApplicationUser>()
+                .HasMany(u => u.FavoriteTvShows)
+                .WithMany(t => t.UsersWhoFavourited)
+                .UsingEntity(j => j.ToTable("UserFavoriteTvShows"));
+        }
     }
+
 }
