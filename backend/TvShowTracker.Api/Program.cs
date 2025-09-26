@@ -28,10 +28,19 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddControllers();
 
 var app = builder.Build();
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline.CsvImporter.ImportTvShows("data.csv", db);
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.EnsureCreated();
+
+    CsvImporter.ImportTvShows("tvshows.csv", db);
+ 
 }
 app.UseHttpsRedirection();
 app.MapControllers();
