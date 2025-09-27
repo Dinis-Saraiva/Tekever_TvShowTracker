@@ -1,3 +1,4 @@
+using HotChocolate;
 namespace TvShowTracker.Api.Models
 {
     public class TvShow
@@ -11,6 +12,8 @@ namespace TvShowTracker.Api.Models
         public int Seasons { get; set; } = 0;
         public string Rating { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
+        
+        [GraphQLIgnore]
         public ICollection<ApplicationUser> UsersWhoFavourited { get; set; } = new List<ApplicationUser>();
         public ICollection<Actor> Cast { get; set; } = new List<Actor>();
     }
