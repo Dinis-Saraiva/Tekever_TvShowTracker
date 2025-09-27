@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TvShowTracker.Api.Data;
 using TvShowTracker.Api.Models;
 
 [ApiController]
@@ -30,17 +28,17 @@ public class AuthController : ControllerBase
         return Ok(new { message = "User registered successfully" });
     }
 
-[HttpPost("login")]
-public async Task<IActionResult> Login([FromBody] LoginDto dto)
-{
-    var result = await _signInManager.PasswordSignInAsync(
-        dto.Username, dto.Password, isPersistent: false, lockoutOnFailure: false);
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    {
+        var result = await _signInManager.PasswordSignInAsync(
+            dto.Username, dto.Password, isPersistent: false, lockoutOnFailure: false);
 
-    if (!result.Succeeded)
-        return Unauthorized("Invalid username or password");
+        if (!result.Succeeded)
+            return Unauthorized("Invalid username or password");
 
-    return Ok(new { message = "Login successful" });
-}
+        return Ok(new { message = "Login successful" });
+    }
 
     [Authorize]
     [HttpPost("logout")]
