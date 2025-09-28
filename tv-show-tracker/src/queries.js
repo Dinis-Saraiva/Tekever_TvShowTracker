@@ -1,32 +1,55 @@
 import { gql } from 'graphql-request';
 
 export const GET_TVSHOWS_PAGINATED = gql`
-  query GetTvShows($first: Int!, $after: String) {
-  tvShows(first: $first, after: $after) {
-    totalCount
-    edges {
-      node {
-        id
-        name
-        description
-        releaseDate
-        seasons
-        rating
-        imageUrl
-        origin
-        genres (first:4) {edges {
-            node { name }
-          }}
+  query GetTvShows(
+    $first: Int
+    $after: String
+    $last: Int
+    $before: String
+  ) {
+    tvShows(first: $first, after: $after, last: $last, before: $before) {
+      edges {
+        node {
+          id
+          name
+          description
+          releaseDate
+          seasons
+          rating
+          imageUrl
+          origin
+          genres {
+            name
+          }
+        }
+        cursor
       }
-      cursor
-    }
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-      startCursor
-      endCursor
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
     }
   }
-}
+`;
 
+export const GET_TVSHOW_BY_ID = gql`
+  query GetTvShows($id: ID!) {
+    tvShows(id: $id) {
+    edges {
+        node {
+      id
+      name
+      description
+      releaseDate
+      seasons
+      rating
+      imageUrl
+      origin
+      genres {
+        name
+      }
+    }
+}}}
 `;
