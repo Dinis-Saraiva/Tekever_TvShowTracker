@@ -17,36 +17,6 @@ namespace TvShowTracker.Api.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
 
-            modelBuilder.Entity("ActorTvShow", b =>
-                {
-                    b.Property<int>("CastId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TvShowsId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("CastId", "TvShowsId");
-
-                    b.HasIndex("TvShowsId");
-
-                    b.ToTable("ActorTvShow");
-                });
-
-            modelBuilder.Entity("ApplicationUserTvShow", b =>
-                {
-                    b.Property<int>("FavoriteTvShowsId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("UsersWhoFavouritedId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("FavoriteTvShowsId", "UsersWhoFavouritedId");
-
-                    b.HasIndex("UsersWhoFavouritedId");
-
-                    b.ToTable("UserFavoriteTvShows", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -175,31 +145,6 @@ namespace TvShowTracker.Api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TvShowTracker.Api.Models.Actor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Bio")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("DateOfDeath")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Actors");
-                });
-
             modelBuilder.Entity("TvShowTracker.Api.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -297,6 +242,57 @@ namespace TvShowTracker.Api.Migrations
                     b.ToTable("Episodes");
                 });
 
+            modelBuilder.Entity("TvShowTracker.Api.Models.FavoriteTvShows", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TvShowId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TvShowId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FavoriteTvShows");
+                });
+
+            modelBuilder.Entity("TvShowTracker.Api.Models.Genre", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Genres");
+                });
+
+            modelBuilder.Entity("TvShowTracker.Api.Models.Person", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Person");
+                });
+
             modelBuilder.Entity("TvShowTracker.Api.Models.TvShow", b =>
                 {
                     b.Property<int>("Id")
@@ -304,13 +300,6 @@ namespace TvShowTracker.Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Genre")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -322,9 +311,12 @@ namespace TvShowTracker.Api.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Rating")
+                    b.Property<string>("Origin")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("TEXT");
@@ -337,34 +329,49 @@ namespace TvShowTracker.Api.Migrations
                     b.ToTable("TvShows");
                 });
 
-            modelBuilder.Entity("ActorTvShow", b =>
+            modelBuilder.Entity("TvShowTracker.Api.Models.TvShowGenre", b =>
                 {
-                    b.HasOne("TvShowTracker.Api.Models.Actor", null)
-                        .WithMany()
-                        .HasForeignKey("CastId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
-                    b.HasOne("TvShowTracker.Api.Models.TvShow", null)
-                        .WithMany()
-                        .HasForeignKey("TvShowsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("GenreId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TvShowId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GenreId");
+
+                    b.HasIndex("TvShowId");
+
+                    b.ToTable("TvShowGenres");
                 });
 
-            modelBuilder.Entity("ApplicationUserTvShow", b =>
+            modelBuilder.Entity("TvShowTracker.Api.Models.WorkedOn", b =>
                 {
-                    b.HasOne("TvShowTracker.Api.Models.TvShow", null)
-                        .WithMany()
-                        .HasForeignKey("FavoriteTvShowsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
-                    b.HasOne("TvShowTracker.Api.Models.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UsersWhoFavouritedId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("PersonId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TvShowId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonId");
+
+                    b.HasIndex("TvShowId");
+
+                    b.ToTable("WorkedOns");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -427,6 +434,68 @@ namespace TvShowTracker.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("TvShow");
+                });
+
+            modelBuilder.Entity("TvShowTracker.Api.Models.FavoriteTvShows", b =>
+                {
+                    b.HasOne("TvShowTracker.Api.Models.TvShow", "TvShow")
+                        .WithMany()
+                        .HasForeignKey("TvShowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TvShowTracker.Api.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("TvShow");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TvShowTracker.Api.Models.TvShowGenre", b =>
+                {
+                    b.HasOne("TvShowTracker.Api.Models.Genre", "Genre")
+                        .WithMany()
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TvShowTracker.Api.Models.TvShow", "TvShow")
+                        .WithMany("TvShowGenres")
+                        .HasForeignKey("TvShowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Genre");
+
+                    b.Navigation("TvShow");
+                });
+
+            modelBuilder.Entity("TvShowTracker.Api.Models.WorkedOn", b =>
+                {
+                    b.HasOne("TvShowTracker.Api.Models.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TvShowTracker.Api.Models.TvShow", "TvShow")
+                        .WithMany("WorkedOn")
+                        .HasForeignKey("TvShowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Person");
+
+                    b.Navigation("TvShow");
+                });
+
+            modelBuilder.Entity("TvShowTracker.Api.Models.TvShow", b =>
+                {
+                    b.Navigation("TvShowGenres");
+
+                    b.Navigation("WorkedOn");
                 });
 #pragma warning restore 612, 618
         }
