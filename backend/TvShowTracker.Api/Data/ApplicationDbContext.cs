@@ -10,17 +10,13 @@ namespace TvShowTracker.Api.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
         public DbSet<TvShow> TvShows { get; set; }
-        public DbSet<Actor> Actors { get; set; }
+        public DbSet<Person> Person { get; set; }
         public DbSet<Episode> Episodes { get; set; }
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
+        public DbSet<WorkedOn> WorkedOns { get; set; }
+        public DbSet<TvShowGenre> TvShowGenres { get; set; }
+        public DbSet<Genre> Genres { get; set; }
 
-            builder.Entity<ApplicationUser>()
-                .HasMany(u => u.FavoriteTvShows)
-                .WithMany(t => t.UsersWhoFavourited)
-                .UsingEntity(j => j.ToTable("UserFavoriteTvShows"));
-        }
+        public DbSet<FavoriteTvShows> FavoriteTvShows { get; set; }
+
     }
-
 }

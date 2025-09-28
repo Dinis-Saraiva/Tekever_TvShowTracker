@@ -25,26 +25,12 @@ public class ProfileController : ControllerBase
     {
         var userId = _userManager.GetUserId(User);
 
-        var favoriteTvShows = await _context.Users
-    .Where(u => u.Id == userId)
-    .SelectMany(u => u.FavoriteTvShows)
-    .Include(tv => tv.Cast)
-    .ToListAsync();
+        var favoriteTvShows = await _context.FavoriteTvShows
+            .Where(f => f.User.Id == userId)
+            .Include(f => f.TvShow)
+            .ToListAsync();
 
-        var favoriteTvShowDtos = favoriteTvShows.Select(tv => new TvShowDto
-        {
-            Id = tv.Id,
-            Name = tv.Name,
-            Description = tv.Description,
-            ReleaseDate = tv.ReleaseDate,
-            Genre = tv.Genre,
-            ImageUrl = tv.ImageUrl,
-            rating = tv.Rating,
-            NumberOfSeasons = tv.Seasons,
-            Cast = tv.Cast.Select(a => new ActorDto { Id = a.Id, Name = a.Name }).ToList()
-        }).ToList();
-
-        return Ok(favoriteTvShowDtos);
+        return Ok(favoriteTvShows);
     }
 
 
@@ -63,11 +49,15 @@ public class ProfileController : ControllerBase
             var tvShow = await _context.TvShows.FindAsync(tvShowId);
             if (tvShow != null)
             {
-                user.FavoriteTvShows.Add(tvShow);
+                _context.FavoriteTvShows.Add(new FavoriteTvShows
+                {
+                    User = user,
+                    TvShow = tvShow
+                });
             }
         }
 
-        await _userManager.UpdateAsync(user);
+        await _context.SaveChangesAsync();
 
         return Ok(new { message = $"{tvShowIds.Count} TV show(s) added to favorites" });
     }
@@ -82,9 +72,14 @@ public class ProfileController : ControllerBase
 
         foreach (var tvShowId in tvShowIds)
         {
-            var tvShow = user.FavoriteTvShows.FirstOrDefault(t => t.Id == tvShowId);
+            var tvShow = await _context.TvShows.FindAsync(tvShowId);
             if (tvShow != null)
-                user.FavoriteTvShows.Remove(tvShow);
+            {
+                var favorite = await _context.FavoriteTvShows
+                   .FirstOrDefaultAsync(f => f.User == user && f.TvShow == tvShow);
+                if (favorite != null)
+                    _context.FavoriteTvShows.Remove(favorite);
+            }
         }
 
         await _userManager.UpdateAsync(user);
