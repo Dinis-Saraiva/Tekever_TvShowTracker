@@ -4,12 +4,16 @@ using TvShowTracker.Api.Data;
 using TvShowTracker.Api.GraphQL;
 using TvShowTracker.Api.Models;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+/* builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))); */
+
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -18,21 +22,42 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    // cookie settings
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // TTL = 1 hour
-    options.SlidingExpiration = true;                  // refresh on activity
-    options.LoginPath = "/api/auth/login";             // not used in API, but must be set
-    options.Cookie.HttpOnly = true;                    // cookie not accessible via JS
-    options.Cookie.SameSite = SameSiteMode.Strict;     // prevent CSRF
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.SlidingExpiration = true;
+    options.LoginPath = "/api/auth/login";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
+
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000") // your frontend dev server
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        });
+});
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+
 
 builder.Services.AddControllers();
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
+    .AddDataLoader<GenresByTvShowIdDataLoader>()
+    .AddType<TvShowType>()
+    .AddType<ObjectType<Genre>>()              
     .AddFiltering()
-    .AddSorting()
-    .AddProjections();
+    .AddSorting();
+
 
 
 var app = builder.Build();
@@ -50,6 +75,11 @@ if (app.Environment.IsDevelopment())
     CsvImporter.ImportTvShows("tvshows.csv", db);
  
 } */
+
+app.UseCors("AllowFrontend");
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseHttpsRedirection();
 app.MapControllers();
 app.MapGraphQL();

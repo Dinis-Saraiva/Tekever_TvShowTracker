@@ -4,6 +4,12 @@ namespace TvShowTracker.Api.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public List<TvShow> FavoriteTvShows { get; set; } = new List<TvShow>();
+
+    }
+    public class FavoriteTvShows
+    {
+        public int Id { get; set; }
+        public required ApplicationUser User { get; set; }
+        public required TvShow TvShow { get; set; }
     }
 }
