@@ -10,7 +10,7 @@ public class TvShowType : ObjectType<TvShow>
     {
 
         descriptor.Field("genres")
-    .UsePaging()
+    //.UsePaging()
     .UseFiltering()
     .UseSorting()
     .Type<ListType<ObjectType<Genre>>>()

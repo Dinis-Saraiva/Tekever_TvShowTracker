@@ -36,8 +36,9 @@ public class AuthController : ControllerBase
 
         if (!result.Succeeded)
             return Unauthorized("Invalid username or password");
-
-        return Ok(new { message = "Login successful" });
+        
+        var user = await _userManager.FindByNameAsync(dto.Username);
+        return Ok(new { user = dto.Username , email = user.Email, id=user.Id });
     }
 
     [Authorize]
@@ -48,12 +49,22 @@ public class AuthController : ControllerBase
         return Ok(new { message = "Logged out" });
     }
 
-    [Authorize]
-    [HttpGet("me")]
-    public IActionResult Me()
-    {
-        return Ok(new { user = User.Identity.Name });
-    }
+[Authorize]
+[HttpGet("current-user")]
+public async Task<IActionResult> GetCurrentUser()
+{
+    var username = User.Identity?.Name;
+
+    if (string.IsNullOrEmpty(username))
+        return Unauthorized("No user logged in");
+
+    var user = await _userManager.FindByNameAsync(username);
+
+    if (user == null)
+        return NotFound("User not found");
+
+    return Ok(new {user = new { id = user.Id, username = user.UserName, email = user.Email}});
+}
 
 }
 
