@@ -1,0 +1,57 @@
+import React, { useState, useContext } from 'react';
+import { UserContext } from './UserContext';
+import { useNavigate } from 'react-router-dom';
+import { Form, Button } from 'react-bootstrap';
+import ErrorModal from './ErrorModal';
+
+const RegisterPage = () => {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const { handleRegister } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const data = await handleRegister(username, email, password);
+    if (data.success && data.user) {
+      navigate('/');
+    } else {
+      setError(data.message);
+      setShowModal(true);
+    }
+  };
+
+  return (
+    <div className="container mt-4" style={{ maxWidth: '500px' }}>
+      <h2>Register</h2>
+      <Form onSubmit={onSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Label>Username</Form.Label>
+          <Form.Control type="text" value={username} onChange={e => setUsername(e.target.value)} required />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Email</Form.Label>
+          <Form.Control type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Password</Form.Label>
+          <Form.Control type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+        </Form.Group>
+        <Button variant="primary" type="submit">Register</Button>
+      </Form>
+
+      <ErrorModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        title="Registration Error"
+        message={error}
+      />
+    </div>
+  );
+};
+
+export default RegisterPage;
