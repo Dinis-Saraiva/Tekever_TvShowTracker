@@ -54,9 +54,15 @@ builder.Services
     .AddQueryType<Query>()
     .AddDataLoader<GenresByTvShowIdDataLoader>()
     .AddType<TvShowType>()
-    .AddType<ObjectType<Genre>>()              
+    .AddType<ObjectType<Genre>>()
+    .ModifyCostOptions(opt =>
+    {
+        opt.MaxFieldCost = 4000;
+    })
     .AddFiltering()
-    .AddSorting();
+    .AddSorting()
+    .AddProjections();
+    
 
 
 
@@ -76,9 +82,22 @@ if (app.Environment.IsDevelopment())
  
 } */
 
+/*  using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    // Make sure the database is created
+    db.Database.EnsureCreated();
+
+    // Seed episodes
+    PersonSeeder.SeedPeople(db);
+}
+  */
+
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 app.MapControllers();
