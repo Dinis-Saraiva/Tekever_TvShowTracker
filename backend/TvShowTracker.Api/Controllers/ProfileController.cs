@@ -34,56 +34,47 @@ public class ProfileController : ControllerBase
     }
 
 
-    [Authorize]
-    [HttpPost("favorites/{tvShowId}")]
-    [Authorize]
-    [HttpPost("favorites")]
-    public async Task<IActionResult> AddFavoriteTvShows([FromBody] List<int> tvShowIds)
-    {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-            return Unauthorized();
+[Authorize]
+[HttpPost("favorites")]
+public async Task<IActionResult> AddFavoriteTvShows([FromBody] List<int> tvShowIds)
+{
+    var user = await _userManager.GetUserAsync(User);
+    if (user == null)
+        return Unauthorized();
 
-        foreach (var tvShowId in tvShowIds)
-        {
-            var tvShow = await _context.TvShows.FindAsync(tvShowId);
-            if (tvShow != null)
-            {
-                _context.FavoriteTvShows.Add(new FavoriteTvShows
-                {
-                    User = user,
-                    TvShow = tvShow
-                });
-            }
+    var tvShows = await _context.TvShows
+        .Where(t => tvShowIds.Contains(t.Id))
+        .ToListAsync();
+
+    foreach (var tvShow in tvShows){
+        _context.FavoriteTvShows.Add(new FavoriteTvShows
+            {User = user,TvShow = tvShow});
         }
 
-        await _context.SaveChangesAsync();
+    await _context.SaveChangesAsync();
+    return Ok(new { message = $"{tvShows.Count} TV show(s) added to favorites" });
+}
 
-        return Ok(new { message = $"{tvShowIds.Count} TV show(s) added to favorites" });
-    }
 
-    [Authorize]
-    [HttpDelete("favorites")]
-    public async Task<IActionResult> RemoveFavoriteTvShows([FromBody] List<int> tvShowIds)
-    {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-            return Unauthorized();
+   [Authorize]
+[HttpDelete("favorites")]
+public async Task<IActionResult> RemoveFavoriteTvShows([FromBody] List<int> tvShowIds)
+{
+    var user = await _userManager.GetUserAsync(User);
+    if (user == null)
+        return Unauthorized();
 
-        foreach (var tvShowId in tvShowIds)
-        {
-            var tvShow = await _context.TvShows.FindAsync(tvShowId);
-            if (tvShow != null)
-            {
-                var favorite = await _context.FavoriteTvShows
-                   .FirstOrDefaultAsync(f => f.User == user && f.TvShow == tvShow);
-                if (favorite != null)
-                    _context.FavoriteTvShows.Remove(favorite);
-            }
-        }
+    var favorites = await _context.FavoriteTvShows
+        .Where(f => f.User == user && tvShowIds.Contains(f.TvShow.Id))
+        .ToListAsync();
 
-        await _userManager.UpdateAsync(user);
+    if (favorites.Count == 0)
+        return NotFound(new { message = "No favorites found to remove" });
 
-        return Ok(new { message = $"{tvShowIds.Count} TV show(s) removed from favorites" });
-    }
+    _context.FavoriteTvShows.RemoveRange(favorites);
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = $"{favorites.Count} TV show(s) removed from favorites" });
+}
+
 }
