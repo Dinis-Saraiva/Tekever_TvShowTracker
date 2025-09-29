@@ -25,8 +25,7 @@ public class TvShowType : ObjectType<TvShow>
 
         descriptor.Field("actors")
         .Type<ListType<NonNullType<ObjectType<Person>>>>()
-        .UsePaging()
-        .Resolve(async (ctx,ct) =>
+        .Resolve(async (ctx, ct) =>
         {
             var tvShow = ctx.Parent<TvShow>();
             var loader = ctx.DataLoader<WorkedOnByTvShowIdDataLoader>();
@@ -37,25 +36,22 @@ public class TvShowType : ObjectType<TvShow>
                 .Select(w => w.Person) ?? new List<Person>();
         });
 
+/*         descriptor.Field("isFavourite")
+               .Type<NonNullType<BooleanType>>()
+               .Resolve(async (ctx, ct) =>
+               {
+                   var userId = ctx.ContextData.ContainsKey("UserId")
+                       ? ctx.ContextData["UserId"] as string
+                       : null;
+                    Console.WriteLine("UserId from context: " + userId);
+                   if (userId == null) return false;
+                   var tvShow = ctx.Parent<TvShow>();
+                   var loader = ctx.DataLoader<FavouriteByTvShowIdDataLoader>();
+                   var favorites = await loader.LoadAsync(tvShow.Id, ct);
 
-
-        /*         descriptor.Field("isFavourite")
-                    .Type<NonNullType<BooleanType>>()
-                    .Resolve(async (ctx, ct) =>
-                    {
-                        var userId = ctx.ContextData.ContainsKey("UserId")
-                            ? ctx.ContextData["UserId"] as string
-                            : null;
-
-                        if (userId == null) return false;
-
-                        var db = ctx.Service<ApplicationDbContext>();
-                        var tvShow = ctx.Parent<TvShow>();
-
-                        return await db.FavoriteTvShows
-                            .AnyAsync(f => f.User.Id == userId && f.TvShow.Id == tvShow.Id, ct);
-                    }); */
-
+                   return favorites != null && favorites.Any(f => f.User.Id == userId);
+               });
+ */
 
 
 
@@ -66,7 +62,6 @@ public class TvShowType : ObjectType<TvShow>
 
         descriptor.Field("directors")
             .Type<ListType<NonNullType<ObjectType<Person>>>>()
-            .UsePaging()
             .Resolve(async ctx =>
             {
                 var loader = ctx.DataLoader<WorkedOnByTvShowIdDataLoader>();

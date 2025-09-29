@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import utils from './Utils';
 
 const TvShowCard = ({ show }) => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const TvShowCard = ({ show }) => {
     >
       <Card.Img
         variant="top"
-        src={show.imageUrl || getRandomPlaceholder()}
+        src={utils.getImageUrl(show.imageUrl) || getRandomPlaceholder()}
         alt={show.name || "TV Show"}
         style={{ height: "300px", objectFit: "cover" }}
       />
@@ -35,7 +36,7 @@ const TvShowCard = ({ show }) => {
         <Card.Title>{show.name || "Unknown"}</Card.Title>
         <Card.Text>{show.description || "No description available."}</Card.Text>
         <ul className="list-unstyled mb-2">
-          <li><strong>Release:</strong> {show.releaseDate || "N/A"}</li>
+          <li><strong>Release:</strong> {utils.formatDate(show.releaseDate) || "N/A"}</li>
           <li><strong>Seasons:</strong> {show.seasons || "N/A"}</li>
           <li><strong>Rating:</strong> {show.rating || "N/A"}</li>
           <li><strong>Origin:</strong> {show.origin || "N/A"}</li>

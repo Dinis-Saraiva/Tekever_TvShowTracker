@@ -6,6 +6,7 @@ import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
 import TvShowPage from './TvShowPage';
 import TvShowDetail from './TvShowDetail';
+import PersonPage from './PersonPage';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -31,6 +32,9 @@ const App = () => {
           <Route path="/show/:id" element={<TvShowDetail />} />
           <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/person/:id" element={<PersonPage/>} />
+          <Route path="*" element={<h2>Page Not Found</h2>} />
+
         </Routes>
       </div>
     </>

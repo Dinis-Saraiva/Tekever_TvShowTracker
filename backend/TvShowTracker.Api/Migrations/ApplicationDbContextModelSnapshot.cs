@@ -251,14 +251,17 @@ namespace TvShowTracker.Api.Migrations
                     b.Property<int>("TvShowId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("UserId")
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId1")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TvShowId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId1");
 
                     b.ToTable("FavoriteTvShows");
                 });
@@ -284,8 +287,17 @@ namespace TvShowTracker.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Bio")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProfileImageUrl")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -446,7 +458,7 @@ namespace TvShowTracker.Api.Migrations
 
                     b.HasOne("TvShowTracker.Api.Models.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId1");
 
                     b.Navigation("TvShow");
 
@@ -475,7 +487,7 @@ namespace TvShowTracker.Api.Migrations
             modelBuilder.Entity("TvShowTracker.Api.Models.WorkedOn", b =>
                 {
                     b.HasOne("TvShowTracker.Api.Models.Person", "Person")
-                        .WithMany()
+                        .WithMany("WorkedOn")
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -489,6 +501,11 @@ namespace TvShowTracker.Api.Migrations
                     b.Navigation("Person");
 
                     b.Navigation("TvShow");
+                });
+
+            modelBuilder.Entity("TvShowTracker.Api.Models.Person", b =>
+                {
+                    b.Navigation("WorkedOn");
                 });
 
             modelBuilder.Entity("TvShowTracker.Api.Models.TvShow", b =>
