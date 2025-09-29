@@ -9,5 +9,6 @@ namespace TvShowTracker.Api.Models
         public DateTime AirDate { get; set; }
         public string Summary { get; set; } = string.Empty;
         public required TvShow TvShow { get; set; }
+        public int TvShowId { get; set; }
     }
 }
