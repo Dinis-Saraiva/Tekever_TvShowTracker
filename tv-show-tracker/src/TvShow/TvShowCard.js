@@ -1,20 +1,10 @@
 import React from 'react';
 import { Card, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import utils from './Utils';
+import utils from '../Utils';
 
 const TvShowCard = ({ show }) => {
   const navigate = useNavigate();
-
-  const getRandomPlaceholder = () => {
-    const placeholders = [
-      "https://picsum.photos/300/450?random=1",
-      "https://picsum.photos/300/450?random=2",
-      "https://picsum.photos/300/450?random=3",
-      "https://picsum.photos/300/450?random=4",
-    ];
-    return placeholders[Math.floor(Math.random() * placeholders.length)];
-  };
 
   const handleClick = () => {
     navigate(`/show/${show.id}`); // navigate to dynamic route
@@ -22,13 +12,13 @@ const TvShowCard = ({ show }) => {
 
   return (
     <Card
-      style={{ width: "18rem", margin: "1rem", cursor: "pointer" }}
-      className="shadow-sm"
+      style={{cursor: "pointer" }}
+      className="h-100 shadow-sm"
       onClick={handleClick}
     >
       <Card.Img
         variant="top"
-        src={utils.getImageUrl(show.imageUrl) || getRandomPlaceholder()}
+        src={utils.getImageUrl(show.imageUrl)}
         alt={show.name || "TV Show"}
         style={{ height: "300px", objectFit: "cover" }}
       />

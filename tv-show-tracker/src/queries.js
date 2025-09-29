@@ -100,3 +100,40 @@ export const GET_PERSON_BY_PERSONID = gql`
     }
   }
 `;
+
+export const GET_PEOPLE_PAGINATED = gql`
+  query GetPeople(
+  $first: Int
+  $after: String
+  $last: Int
+  $before: String
+  $where: PersonFilterInput
+  $order: [PersonSortInput!]
+) {
+  people(
+    first: $first
+    after: $after
+    last: $last
+    before: $before
+    where: $where
+    order: $order
+  ) {
+    edges {
+      node {
+        id
+        name
+        bio
+        birthDate
+        profileImageUrl
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}
+`;

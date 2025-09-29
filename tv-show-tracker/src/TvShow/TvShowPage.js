@@ -1,35 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Button, Form, Dropdown, DropdownButton, Badge } from 'react-bootstrap';
-import { graphql } from './Enpoints/api';
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import { graphql } from '../Enpoints/api';
 import TvShowCard from './TvShowCard';
-import { GET_TVSHOWS_PAGINATED } from './queries';
+import { GET_TVSHOWS_PAGINATED } from '../queries';
+import TvShowFilters from './TvShowFilters';
 
 const PAGE_SIZE = 15;
 
-const GENRES = [
-  "International TV Shows",
-  "TV Dramas",
-  "TV Sci-Fi & Fantasy",
-  "TV Mysteries",
-  "Crime TV Shows",
-  "Docuseries",
-  "Anime Series",
-  "Reality TV",
-  "TV Comedies",
-  "Romantic TV Shows",
-  "Science & Nature TV",
-  "British TV Shows",
-  "Korean TV Shows",
-  "Kids' TV",
-  "TV Action & Adventure",
-  "Spanish-Language TV Shows",
-  "TV Shows",
-  "TV Horror",
-  "Stand-Up Comedy & Talk Shows",
-  "Teen TV Shows",
-  "TV Thrillers",
-  "Classic & Cult TV"
-];
+const RATING_ENUMS = {
+  "TV-MA": "TV_MA",
+  "TV-14": "TV_14",
+  "TV-Y7": "TV_Y7",
+  "TV-PG": "TV_PG",
+  "TV-G": "TV_G",
+  "TV-Y": "TV_Y",
+};
 
 function TvShowPage() {
   const [tvShows, setTvShows] = useState([]);
@@ -38,11 +23,12 @@ function TvShowPage() {
   const [search, setSearch] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenres, setSelectedGenres] = useState([]);
+  const [selectedRating, setSelectedRating] = useState(null);
+  const [orderDirection, setOrderDirection] = useState("DESC");
 
-  const fetchTvShows = async ({ after = null, before = null, first = PAGE_SIZE, last = null, searchFilter = '', genres = [] } = {}) => {
+  const fetchTvShows = async ({ after = null, before = null, first = PAGE_SIZE, last = null, searchFilter = '', genres = [], rating = null, order = "DESC" } = {}) => {
     setLoading(true);
     try {
-      // Build nested genre filter
       const genreFilters = genres.map(name => ({ name: { eq: name } }));
 
       const variables = {
@@ -55,15 +41,14 @@ function TvShowPage() {
           ...(genres.length > 0
             ? { tvShowGenres: { some: { genre: { or: genreFilters } } } }
             : {}),
+          ...(rating ? { rating: { eq: RATING_ENUMS[rating] } } : {}),
         },
-        order: [{ releaseDate: "DESC" }],
+        order: [{ releaseDate: order }],
       };
 
-
-
       const data = await graphql(GET_TVSHOWS_PAGINATED, variables);
-
       const edges = data.data.tvShows.edges;
+
       setTvShows(edges.map(e => e.node));
       setPageInfo(data.data.tvShows.pageInfo);
     } catch (err) {
@@ -74,57 +59,33 @@ function TvShowPage() {
   };
 
   useEffect(() => {
-    fetchTvShows({ first: PAGE_SIZE, searchFilter: searchTerm, genres: selectedGenres });
-  }, [searchTerm, selectedGenres]);
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    setSearchTerm(search);
-  };
-
-  const toggleGenre = (genre) => {
-    setSelectedGenres(prev =>
-      prev.includes(genre) ? prev.filter(g => g !== genre) : [...prev, genre]
-    );
-  };
+    fetchTvShows({
+      first: PAGE_SIZE,
+      searchFilter: searchTerm,
+      genres: selectedGenres,
+      rating: selectedRating,
+      order: orderDirection,
+    });
+  }, [searchTerm, selectedGenres, selectedRating, orderDirection]);
 
   return (
     <Container className="mt-5">
-      {/* Search Form */}
-      <Form onSubmit={handleSearchSubmit} className="mb-3 d-flex gap-2">
-        <Form.Control
-          type="text"
-          placeholder="Search TV Shows..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Button type="submit" disabled={loading}>Search</Button>
+      {/* Filters */}
+      <TvShowFilters
+        search={search}
+        setSearch={setSearch}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        loading={loading}
+        selectedGenres={selectedGenres}
+        setSelectedGenres={setSelectedGenres}
+        selectedRating={selectedRating}
+        setSelectedRating={setSelectedRating}
+        orderDirection={orderDirection}
+        setOrderDirection={setOrderDirection}
+      />
 
-        {/* Genres Dropdown */}
-        <DropdownButton id="genre-dropdown" title="Select Genres" className="ms-2">
-          <div style={{ maxHeight: '300px', overflowY: 'auto', padding: '0.5rem' }}>
-            {GENRES.map(genre => (
-              <Form.Check
-                key={genre}
-                type="checkbox"
-                label={genre}
-                checked={selectedGenres.includes(genre)}
-                onChange={() => toggleGenre(genre)}
-              />
-            ))}
-          </div>
-        </DropdownButton>
-      </Form>
-
-      {/* Display selected genres */}
-      {selectedGenres.length > 0 && (
-        <div className="mb-3">
-          {selectedGenres.map(g => (
-            <Badge key={g} bg="secondary" className="me-1">{g}</Badge>
-          ))}
-        </div>
-      )}
-
+      {/* TV Shows Grid */}
       <Row xs={1} md={2} lg={3} className="g-4">
         {tvShows.map(show => (
           <Col key={show.id}>
@@ -133,8 +94,10 @@ function TvShowPage() {
         ))}
       </Row>
 
+      {/* Pagination */}
       <div className="d-flex justify-content-center mt-4 gap-2">
         <Button
+          variant="dark"
           disabled={!pageInfo.hasPreviousPage || loading}
           onClick={() =>
             fetchTvShows({
@@ -144,12 +107,15 @@ function TvShowPage() {
               after: null,
               searchFilter: searchTerm,
               genres: selectedGenres,
+              rating: selectedRating,
+              order: orderDirection,
             })
           }
         >
           Previous
         </Button>
         <Button
+          variant="dark"
           disabled={!pageInfo.hasNextPage || loading}
           onClick={() =>
             fetchTvShows({
@@ -159,6 +125,8 @@ function TvShowPage() {
               before: null,
               searchFilter: searchTerm,
               genres: selectedGenres,
+              rating: selectedRating,
+              order: orderDirection,
             })
           }
         >

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { login, logout, register, getCurrentUser } from './Enpoints/Authentication';
+import { login, logout, register, getCurrentUser } from '../Enpoints/Authentication';
 
 export const UserContext = createContext();
 

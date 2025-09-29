@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { graphql } from './Enpoints/api';
-import { GET_PERSON_BY_PERSONID } from './queries';
+import { graphql } from '../Enpoints/api';
+import { GET_PERSON_BY_PERSONID } from '../queries';
 import { Card, Row, Col, Badge, Spinner, ListGroup, Button } from 'react-bootstrap';
-import  utils from './Utils';
+import  utils from '../Utils';
 
 const PersonPage = () => {
   const { id } = useParams();
@@ -77,7 +77,7 @@ const PersonPage = () => {
               <span className="me-2">
                 <strong>Role:</strong> {work.role}
               </span>
-              <Link to={`/tvshow/${work.tvShow.id}`}>
+              <Link to={`/show/${work.tvShow.id}`}>
                 <Badge bg="info" style={{ cursor: 'pointer' }}>
                   {work.tvShow.name}
                 </Badge>

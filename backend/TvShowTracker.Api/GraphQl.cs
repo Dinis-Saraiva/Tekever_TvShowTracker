@@ -10,10 +10,16 @@ namespace TvShowTracker.Api.GraphQL
         [UsePaging(DefaultPageSize = 10, MaxPageSize = 15)]
         [UseFiltering]
         [UseSorting]
-       
+
         public IQueryable<TvShow> GetTvShows([Service] ApplicationDbContext db)
             => db.TvShows;
 
+        [UsePaging(DefaultPageSize = 10, MaxPageSize = 15)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<Person> GetPeople([Service] ApplicationDbContext db)
+            => db.Person;
 
         public Task<TvShow?> GetTvShowByIdAsync(int id, [Service] ApplicationDbContext db)
             => db.TvShows.FirstOrDefaultAsync(t => t.Id == id);
@@ -23,8 +29,13 @@ namespace TvShowTracker.Api.GraphQL
             => db.Episodes.Where(e => e.TvShowId == tvShowId);
 
         public Task<Person?> GetPersonByIdAsync(int id, [Service] ApplicationDbContext db)
-            => db.Person.FirstOrDefaultAsync(p => p.Id == id);
-            
+        {
+            return db.Person
+                     .Include(p => p.WorkedOn)         
+                     .ThenInclude(w => w.TvShow)          
+                     .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
         [UsePaging(DefaultPageSize = 10, MaxPageSize = 15)]
         [UseFiltering]
         [UseSorting]

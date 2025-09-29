@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Header from './Header';
 import HomePage from './HomePage';
-import LoginPage from './LoginPage';
-import RegisterPage from './RegisterPage';
-import TvShowPage from './TvShowPage';
-import TvShowDetail from './TvShowDetail';
-import PersonPage from './PersonPage';
+import LoginPage from './UserManagement/LoginPage';
+import RegisterPage from './UserManagement/RegisterPage';
+import TvShowPage from './TvShow/TvShowPage';
+import TvShowDetail from './TvShow/TvShowDetail';
+import PersonPage from './People/PersonPage';
+import PeoplePage from './People/PeoplePage';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -32,6 +33,7 @@ const App = () => {
           <Route path="/show/:id" element={<TvShowDetail />} />
           <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/people" element={<PeoplePage />} />
           <Route path="/person/:id" element={<PersonPage/>} />
           <Route path="*" element={<h2>Page Not Found</h2>} />
 

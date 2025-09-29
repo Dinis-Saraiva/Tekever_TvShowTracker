@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { graphql } from './Enpoints/api';
-import { GET_TVSHOW_BY_ID, GET_EPISODES_BY_TVSHOW_ID } from './queries';
+import { graphql } from '../Enpoints/api';
+import { GET_TVSHOW_BY_ID, GET_EPISODES_BY_TVSHOW_ID } from '../queries';
 import { Card, Row, Col, Badge, Spinner, ListGroup, Button } from 'react-bootstrap';
-import Utils from './Utils';
+import Utils from '../Utils';
 
 const TvShowDetail = () => {
   const { id } = useParams();
