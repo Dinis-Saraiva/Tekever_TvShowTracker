@@ -19,7 +19,7 @@ const Header = () => {
           <Nav>
             {user ? (
               <>
-                <Navbar.Text className="me-2">Signed in as: {user.name}</Navbar.Text>
+                <Navbar.Text className="me-2">Signed in as: {user.username}</Navbar.Text>
                 <Button variant="outline-light" onClick={handleLogout}>Logout</Button>
               </>
             ) : (
