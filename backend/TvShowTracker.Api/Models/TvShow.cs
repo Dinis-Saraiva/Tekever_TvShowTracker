@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using HotChocolate;
 namespace TvShowTracker.Api.Models
 {
@@ -24,5 +25,15 @@ namespace TvShowTracker.Api.Models
         public Rating Rating { get; set; } = Rating.other;
         public ICollection<WorkedOn> WorkedOn { get; set; } = new List<WorkedOn>();
         public ICollection<TvShowGenre> TvShowGenres { get; set; } = new List<TvShowGenre>();
+        public TvShowFeatures? Features { get; set; }
+    }
+
+    public class TvShowFeatures
+    {
+        [Key]
+        public int TvShowId { get; set; }
+        public string CombinedVectorJson { get; set; } = string.Empty;
+        public TvShow TvShow { get; set; } = null!;
+
     }
 }

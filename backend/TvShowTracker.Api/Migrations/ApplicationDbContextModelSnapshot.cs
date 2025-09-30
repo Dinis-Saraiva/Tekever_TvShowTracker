@@ -339,6 +339,20 @@ namespace TvShowTracker.Api.Migrations
                     b.ToTable("TvShows");
                 });
 
+            modelBuilder.Entity("TvShowTracker.Api.Models.TvShowFeatures", b =>
+                {
+                    b.Property<int>("TvShowId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CombinedVectorJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("TvShowId");
+
+                    b.ToTable("TvShowFeatures");
+                });
+
             modelBuilder.Entity("TvShowTracker.Api.Models.TvShowGenre", b =>
                 {
                     b.Property<int>("Id")
@@ -465,6 +479,17 @@ namespace TvShowTracker.Api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("TvShowTracker.Api.Models.TvShowFeatures", b =>
+                {
+                    b.HasOne("TvShowTracker.Api.Models.TvShow", "TvShow")
+                        .WithOne("Features")
+                        .HasForeignKey("TvShowTracker.Api.Models.TvShowFeatures", "TvShowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TvShow");
+                });
+
             modelBuilder.Entity("TvShowTracker.Api.Models.TvShowGenre", b =>
                 {
                     b.HasOne("TvShowTracker.Api.Models.Genre", "Genre")
@@ -510,6 +535,8 @@ namespace TvShowTracker.Api.Migrations
 
             modelBuilder.Entity("TvShowTracker.Api.Models.TvShow", b =>
                 {
+                    b.Navigation("Features");
+
                     b.Navigation("TvShowGenres");
 
                     b.Navigation("WorkedOn");

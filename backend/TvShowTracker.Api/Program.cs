@@ -76,14 +76,14 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-/* using (var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.EnsureCreated();
-
-    CsvImporter.ImportTvShows("tvshows.csv", db);
+    TvShowVectorCalculator.CalculateVectors(db);
+    //CsvImporter.ImportTvShows("tvshows.csv", db);
  
-} */
+}
 
 /*  using (var scope = app.Services.CreateScope())
 {

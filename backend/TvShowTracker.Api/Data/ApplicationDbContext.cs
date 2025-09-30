@@ -15,6 +15,7 @@ namespace TvShowTracker.Api.Data
         public DbSet<WorkedOn> WorkedOns { get; set; }
         public DbSet<TvShowGenre> TvShowGenres { get; set; }
         public DbSet<Genre> Genres { get; set; }
+        public DbSet<TvShowFeatures> TvShowFeatures { get; set; }
 
         public DbSet<FavoriteTvShows> FavoriteTvShows { get; set; }
 
