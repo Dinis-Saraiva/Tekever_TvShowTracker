@@ -251,17 +251,15 @@ namespace TvShowTracker.Api.Migrations
                     b.Property<int>("TvShowId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TvShowId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("FavoriteTvShows");
                 });
@@ -458,7 +456,9 @@ namespace TvShowTracker.Api.Migrations
 
                     b.HasOne("TvShowTracker.Api.Models.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("TvShow");
 

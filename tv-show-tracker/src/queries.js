@@ -38,29 +38,6 @@ export const GET_TVSHOWS_PAGINATED = gql`
   }
 `;
 
-export const GET_TVSHOW_BY_ID = gql`
-  query GetTvShowById($id: Int!) {
-    tvShowById(id: $id) {
-      id
-      name
-      description
-      releaseDate
-      seasons
-      rating
-      imageUrl
-      origin
-      rating
-      genres {
-        name
-      }
-      actors { id name
-        }
-      directors { id name
-        }
-    }
-  }
-`;
-
 export const GET_EPISODES_BY_TVSHOW_ID = gql`
   query GetEpisodesByTvShowId($tvShowId: Int!, $first: Int, $after: String, $last: Int, $before: String) {
     episodesByTvShowId(tvShowId: $tvShowId, first: $first, after: $after, last: $last, before: $before) {
@@ -95,6 +72,7 @@ export const GET_PERSON_BY_PERSONID = gql`
       profileImageUrl
       workedOn { id role
         tvShow { id name
+          releaseDate
         }
       }
     }

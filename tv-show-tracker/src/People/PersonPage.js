@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { graphql } from '../Enpoints/api';
 import { GET_PERSON_BY_PERSONID } from '../queries';
 import { Card, Row, Col, Badge, Spinner, ListGroup, Button } from 'react-bootstrap';
-import  utils from '../Utils';
+import utils from '../Utils';
 
 const PersonPage = () => {
   const { id } = useParams();
@@ -41,6 +41,7 @@ const PersonPage = () => {
     return <p className="text-center mt-5">Person not found.</p>;
   }
 
+
   return (
     <div className="container mt-4">
       {/* Person Card */}
@@ -68,25 +69,34 @@ const PersonPage = () => {
         </Row>
       </Card>
 
-      {/* Worked On Section */}
+
       <h4>Worked On</h4>
       {person.workedOn && person.workedOn.length > 0 ? (
-        <ListGroup>
-          {person.workedOn.map(work => (
+        <ListGroup variant="flush">
+          {person.workedOn.map((work) => (
             <ListGroup.Item key={work.id}>
-              <span className="me-2">
-                <strong>Role:</strong> {work.role}
-              </span>
-              <Link to={`/show/${work.tvShow.id}`}>
-                <Badge bg="info" style={{ cursor: 'pointer' }}>
-                  {work.tvShow.name}
-                </Badge>
-              </Link>
+              <Row className="align-items-center">
+                <Col md={4}>
+                  <strong>Role:</strong> {work.role}
+                </Col>
+                <Col md={5}>
+                  <Link to={`/show/${work.tvShow.id}`} style={{ textDecoration: "none" }}>
+                    <Badge bg="info" className="p-2">
+                      {work.tvShow.name}
+                    </Badge>
+                  </Link>
+                </Col>
+                <Col md={3} className="text-muted text-end">
+                  {work.tvShow.releaseDate
+                    ? new Date(work.tvShow.releaseDate).getFullYear()
+                    : "N/A"}
+                </Col>
+              </Row>
             </ListGroup.Item>
           ))}
         </ListGroup>
       ) : (
-        <p>This person has no credited work.</p>
+        <p className="text-muted fst-italic">This person has no credited work.</p>
       )}
     </div>
   );

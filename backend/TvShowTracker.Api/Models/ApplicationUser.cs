@@ -10,7 +10,7 @@ namespace TvShowTracker.Api.Models
     {
         public int Id { get; set; }
         public int TvShowId { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public required ApplicationUser User { get; set; }
         public required TvShow TvShow { get; set; }
     }

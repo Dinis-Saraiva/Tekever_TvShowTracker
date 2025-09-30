@@ -10,18 +10,16 @@ public class TvShowType : ObjectType<TvShow>
     {
 
         descriptor.Field("genres")
-    //.UsePaging()
-    .UseFiltering()
-    .UseSorting()
-    .Type<ListType<ObjectType<Genre>>>()
-    .Resolve(async (ctx, ct) =>
-    {
-
-        var tvShow = ctx.Parent<TvShow>();
-        var loader = ctx.DataLoader<GenresByTvShowIdDataLoader>();
-        var genres = await loader.LoadAsync(tvShow.Id, ct);
-        return genres ?? new List<Genre>();
-    });
+        .UseFiltering()
+        .UseSorting()
+        .Type<ListType<ObjectType<Genre>>>()
+        .Resolve(async (ctx, ct) =>
+        {
+            var tvShow = ctx.Parent<TvShow>();
+            var loader = ctx.DataLoader<GenresByTvShowIdDataLoader>();
+            var genres = await loader.LoadAsync(tvShow.Id, ct);
+            return genres ?? new List<Genre>();
+        });
 
         descriptor.Field("actors")
         .Type<ListType<NonNullType<ObjectType<Person>>>>()
@@ -33,32 +31,13 @@ public class TvShowType : ObjectType<TvShow>
             workedOnList = workedOnList ?? new List<WorkedOn>();
             return workedOnList
                 .Where(w => w.Role == JobTitle.Actor)
-                .Select(w => w.Person) ?? new List<Person>();
+                .Select(w => w.Person).ToList();
         });
-
-/*         descriptor.Field("isFavourite")
-               .Type<NonNullType<BooleanType>>()
-               .Resolve(async (ctx, ct) =>
-               {
-                   var userId = ctx.ContextData.ContainsKey("UserId")
-                       ? ctx.ContextData["UserId"] as string
-                       : null;
-                    Console.WriteLine("UserId from context: " + userId);
-                   if (userId == null) return false;
-                   var tvShow = ctx.Parent<TvShow>();
-                   var loader = ctx.DataLoader<FavouriteByTvShowIdDataLoader>();
-                   var favorites = await loader.LoadAsync(tvShow.Id, ct);
-
-                   return favorites != null && favorites.Any(f => f.User.Id == userId);
-               });
- */
-
 
 
         descriptor.Field(t => t.WorkedOn)
            .Type<ListType<NonNullType<ObjectType<WorkedOn>>>>();
-
-
+           
 
         descriptor.Field("directors")
             .Type<ListType<NonNullType<ObjectType<Person>>>>()
@@ -70,7 +49,7 @@ public class TvShowType : ObjectType<TvShow>
                 workedOnList = workedOnList ?? new List<WorkedOn>();
                 return workedOnList
                     .Where(w => w.Role == JobTitle.Director)
-                    .Select(w => w.Person) ?? new List<Person>();
+                    .Select(w => w.Person).ToList();
             });
 
     }

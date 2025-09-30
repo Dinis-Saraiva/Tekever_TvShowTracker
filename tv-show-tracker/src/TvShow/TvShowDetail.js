@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { graphql } from '../Enpoints/api';
-import { GET_TVSHOW_BY_ID, GET_EPISODES_BY_TVSHOW_ID } from '../queries';
 import { Card, Row, Col, Badge, Spinner, ListGroup, Button } from 'react-bootstrap';
 import Utils from '../Utils';
+import { getTvShowByID } from '../Enpoints/TvShow';
+import { graphql } from '../Enpoints/api';
+import {GET_EPISODES_BY_TVSHOW_ID} from '../queries';
+import FavoriteButton from './FavouriteButton';
 
 const TvShowDetail = () => {
   const { id } = useParams();
@@ -13,40 +15,44 @@ const TvShowDetail = () => {
   const [pageInfo, setPageInfo] = useState({ hasNextPage: false, hasPreviousPage: false, startCursor: null, endCursor: null });
   const EPISODES_PER_PAGE = 20;
 
-  // Fetch TV show details
   useEffect(() => {
     const fetchShow = async () => {
       try {
-        const res = await graphql(GET_TVSHOW_BY_ID, { id: Number(id) });
-        setShow(res.data.tvShowById);
+        const res = await getTvShowByID(Number(id));
+        if (res.success) {
+          setShow(res.tvShow);
+        } else {
+          console.error(res.message);
+        }
       } catch (err) {
         console.error(err);
       }
     };
     fetchShow();
+    fetchEpisodes();
   }, [id]);
 
-
+  // Episodes logic stays the same
   const fetchEpisodes = async ({ before = null, after = null, first = EPISODES_PER_PAGE, last = EPISODES_PER_PAGE } = {}) => {
     setLoadingEpisodes(true);
     try {
+
       const variables = { tvShowId: Number(id), first, after, last, before };
       const res = await graphql(GET_EPISODES_BY_TVSHOW_ID, variables);
-
-      const edges = res.data.episodesByTvShowId.edges;
+      const edges = res.data.episodesByTvShowId.edges; 
+      
       setEpisodes(edges.map(edge => edge.node));
-      const info = res.data.episodesByTvShowId.pageInfo;
+      const info = res.data.episodesByTvShowId.pageInfo; 
+      
       setPageInfo(info);
+
     } catch (err) {
       console.error(err);
     } finally {
       setLoadingEpisodes(false);
     }
   };
-  // Fetch episodes
-  useEffect(() => {
-    fetchEpisodes();
-  }, [id]);
+
 
   if (!show) return (
     <div className="d-flex justify-content-center align-items-center" style={{ height: '80vh' }}>
@@ -55,12 +61,12 @@ const TvShowDetail = () => {
       </Spinner>
     </div>
   );
+
   const episodesBySeason = episodes.reduce((acc, ep) => {
     if (!acc[ep.seasonNumber]) acc[ep.seasonNumber] = [];
     acc[ep.seasonNumber].push(ep);
     return acc;
   }, {});
-
 
   return (
     <div className="container mt-4">
@@ -84,6 +90,7 @@ const TvShowDetail = () => {
                 <ListGroup.Item><strong>Seasons:</strong> {show.seasons}</ListGroup.Item>
                 <ListGroup.Item><strong>Rating:</strong> {show.rating}</ListGroup.Item>
                 <ListGroup.Item><strong>Origin:</strong> {show.origin}</ListGroup.Item>
+                <ListGroup.Item><strong>Favorite: </strong><FavoriteButton tvShowId={show.id} initialFavorite={show.isFavorite}/></ListGroup.Item>
               </ListGroup>
 
               <div className="mb-2">
@@ -93,11 +100,9 @@ const TvShowDetail = () => {
                 ))}
               </div>
 
-
-
               <div className="mb-2">
                 <strong>Actors: </strong>
-                {show.actors?.map(actor => (
+                {show.cast?.map(actor => (
                   <Link to={`/person/${actor.id}`} key={actor.id} style={{ textDecoration: 'none' }}>
                     <Badge bg="info" className="me-1" style={{ cursor: 'pointer' }}>
                       {actor.name}
@@ -126,7 +131,7 @@ const TvShowDetail = () => {
         </Row>
       </Card>
 
-      {/* Episodes */}
+      {/* Episodes Section stays unchanged */}
       <h4>Episodes</h4>
       {loadingEpisodes ? (
         <div className="d-flex justify-content-center my-4">

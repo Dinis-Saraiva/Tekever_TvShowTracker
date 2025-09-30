@@ -8,6 +8,7 @@ import TvShowPage from './TvShow/TvShowPage';
 import TvShowDetail from './TvShow/TvShowDetail';
 import PersonPage from './People/PersonPage';
 import PeoplePage from './People/PeoplePage';
+import Favorites from './Favorites';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -33,8 +34,9 @@ const App = () => {
           <Route path="/show/:id" element={<TvShowDetail />} />
           <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/people" element={<PeoplePage />} />
+          <Route path="/people" element={<PeoplePage />}/>
           <Route path="/person/:id" element={<PersonPage/>} />
+          <Route path="/favorites" element={ <Favorites />}/>
           <Route path="*" element={<h2>Page Not Found</h2>} />
 
         </Routes>

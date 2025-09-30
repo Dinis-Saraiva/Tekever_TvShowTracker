@@ -20,6 +20,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+
+builder.Services.AddMemoryCache();
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
@@ -104,4 +107,5 @@ app.MapControllers();
 app.MapGraphQL();
 app.Run();
 
+public partial class Program { }
 
