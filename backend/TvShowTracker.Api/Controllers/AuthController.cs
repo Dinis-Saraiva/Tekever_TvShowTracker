@@ -38,7 +38,9 @@ public class AuthController : ControllerBase
             return Unauthorized("Invalid username or password");
         
         var user = await _userManager.FindByNameAsync(dto.Username);
-        return Ok(new { user = dto.Username , email = user.Email, id=user.Id });
+        if (user==null)
+            return  Unauthorized("Invalid user");
+        return Ok(new { user = new { id = user.Id, username = user.UserName, email = user.Email } });
     }
 
     [Authorize]
