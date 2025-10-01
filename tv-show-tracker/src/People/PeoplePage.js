@@ -84,8 +84,7 @@ function PeoplePage() {
           </Col>
         ))}
       </Row>
-
-      {/* Pagination */}
+      
       <div className="d-flex justify-content-center mt-4 gap-2">
         <Button
           variant="dark"
