@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card, Row, Col, Badge, Spinner, ListGroup, Button } from 'react-bootstrap';
 import Utils from '../Utils';
-import { getTvShowByID } from '../Enpoints/TvShow';
+import { getTvShowByID, exportTvShowPdf } from '../Enpoints/TvShow';
 import { graphql } from '../Enpoints/api';
-import {GET_EPISODES_BY_TVSHOW_ID} from '../queries';
+import { GET_EPISODES_BY_TVSHOW_ID } from '../queries';
 import FavoriteButton from './FavouriteButton';
 
 const TvShowDetail = () => {
@@ -32,18 +32,26 @@ const TvShowDetail = () => {
     fetchEpisodes();
   }, [id]);
 
-  // Episodes logic stays the same
+  const handleDownloadPdf = async () => {
+    const result = await exportTvShowPdf(Number(id));
+    if (result.success) {
+      alert('PDF downloaded!');
+    } else {
+      alert(result.message);
+    }
+  };
+
   const fetchEpisodes = async ({ before = null, after = null, first = EPISODES_PER_PAGE, last = EPISODES_PER_PAGE } = {}) => {
     setLoadingEpisodes(true);
     try {
 
       const variables = { tvShowId: Number(id), first, after, last, before };
       const res = await graphql(GET_EPISODES_BY_TVSHOW_ID, variables);
-      const edges = res.data.episodesByTvShowId.edges; 
-      
+      const edges = res.data.episodesByTvShowId.edges;
+
       setEpisodes(edges.map(edge => edge.node));
-      const info = res.data.episodesByTvShowId.pageInfo; 
-      
+      const info = res.data.episodesByTvShowId.pageInfo;
+
       setPageInfo(info);
 
     } catch (err) {
@@ -90,7 +98,8 @@ const TvShowDetail = () => {
                 <ListGroup.Item><strong>Seasons:</strong> {show.seasons}</ListGroup.Item>
                 <ListGroup.Item><strong>Rating:</strong> {show.rating}</ListGroup.Item>
                 <ListGroup.Item><strong>Origin:</strong> {show.origin}</ListGroup.Item>
-                <ListGroup.Item><strong>Favorite: </strong><FavoriteButton tvShowId={show.id} initialFavorite={show.isFavorite}/></ListGroup.Item>
+                <ListGroup.Item><strong>Favorite: </strong><FavoriteButton tvShowId={show.id} initialFavorite={show.isFavorite} /></ListGroup.Item>
+                <ListGroup.Item><Button onClick={handleDownloadPdf}> DOWNLOAD PDF</Button></ListGroup.Item>
               </ListGroup>
 
               <div className="mb-2">
