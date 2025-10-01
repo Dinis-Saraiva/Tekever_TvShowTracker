@@ -19,12 +19,32 @@ public class TvShowController : ControllerBase
         _context = context;
     }
 
-    [HttpGet("GetTvShowByID")]
-    public async Task<IActionResult> GetTvShowByID([FromQuery] int tvShowId)
+    [HttpGet("GetTvShowByID/{tvShowId}")]
+    public async Task<IActionResult> GetTvShowByID([FromRoute] int tvShowId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var dto = await BuildTvShowDto(tvShowId, user);
+        if (dto == null) return NotFound(new { message = "TV show not found" });
+
+        return Ok(dto);
+    }
+
+    [HttpGet("{tvShowId}/export-pdf")]
+    public async Task<IActionResult> ExportTvShowPdf([FromRoute] int tvShowId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var dto = await BuildTvShowDto(tvShowId, user);
+        if (dto == null) return NotFound(new { message = "TV show not found" });
+
+        var pdfBytes = PdfGenerator.GenerateTvShowPdf(dto);
+
+        return File(pdfBytes, "application/pdf", $"{dto.Name}.pdf");
+    }
+
+    private async Task<TvShowDto?> BuildTvShowDto(int tvShowId, ApplicationUser? user)
     {
         var tvShow = await _context.TvShows.FirstOrDefaultAsync(t => t.Id == tvShowId);
-        if (tvShow == null)
-            return NotFound(new { message = "TV show not found" });
+        if (tvShow == null) return null;
 
         var workedOn = await _context.WorkedOns
             .Include(w => w.Person)
@@ -46,13 +66,14 @@ public class TvShowController : ControllerBase
             .Where(tg => tg.TvShowId == tvShowId)
             .ToListAsync();
         var genres = tvShowGenres.Select(tg => tg.Genre).ToList();
-        var user = await _userManager.GetUserAsync(User);
+
         var isFavorite = false;
         if (user != null)
         {
             isFavorite = await _context.FavoriteTvShows.AnyAsync(f => f.TvShowId == tvShowId && f.UserId == user.Id);
         }
-        var tvShowDto = new TvShowDto
+
+        return new TvShowDto
         {
             Id = tvShow.Id,
             Name = tvShow.Name,
@@ -67,6 +88,5 @@ public class TvShowController : ControllerBase
             Genres = genres,
             IsFavorite = isFavorite,
         };
-        return Ok(tvShowDto);
     }
 }
