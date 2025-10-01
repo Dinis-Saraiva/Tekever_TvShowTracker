@@ -1,0 +1,7 @@
+SENDGRID_API_KEY= API_KEY HERE
+FROM_EMAIL= dinis.saraiva.santos2@gmail.com
+FROM_NAME= TvShowTracker
+
+DEFAULT_CONNECTION=Data Source=tvshows.db
+
+FRONTEND_URL=http://localhost:3000
