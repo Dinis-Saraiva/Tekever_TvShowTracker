@@ -39,8 +39,15 @@ public class RecommendationsController : ControllerBase
         if (user == null)
             return Unauthorized();
 
-        await _recommendationService.sendEmailRecomendations(user);
-
-        return Ok(new { message = "Recommendations email sent!" });
+        try
+        {
+            await _recommendationService.sendEmailRecomendations(user);
+            return Ok("Recommendations email sent!");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Failed to send recommendations email: {ex.Message}");
+        }
     }
+
 }
