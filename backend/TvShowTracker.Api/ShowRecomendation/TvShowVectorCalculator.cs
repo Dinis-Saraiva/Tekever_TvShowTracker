@@ -4,7 +4,7 @@ using TvShowTracker.Api.Models;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Transforms.Text;
-using Microsoft.Extensions.Options;
+
 using System.Text.Json;
 public class TvShowVectorCalculator
 {
