@@ -71,7 +71,7 @@ public class FavoritesController : ControllerBase
 
     [Authorize]
     [HttpDelete]
-    public async Task<IActionResult> RemoveFavoriteTvShows([FromQuery]int tvShowId)
+    public async Task<IActionResult> RemoveFavoriteTvShows([FromQuery] int tvShowId)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
@@ -79,14 +79,16 @@ public class FavoritesController : ControllerBase
 
 
         var removeFavorite = await _context.FavoriteTvShows.FirstOrDefaultAsync(f => f.TvShowId == tvShowId && f.UserId == user.Id);
-        if (removeFavorite == null) {
-            return NotFound(new { message = "Favorite TV show not found" }); }
+        if (removeFavorite == null)
+        {
+            return NotFound(new { message = "Favorite TV show not found" });
+        }
 
 
         _context.FavoriteTvShows.Remove(removeFavorite);
         await _context.SaveChangesAsync();
 
-        return Ok(new { message =  $"{tvShowId} TV show removed from favorites" });
+        return Ok(new { message = $"{tvShowId} TV show removed from favorites" });
     }
 
 }
