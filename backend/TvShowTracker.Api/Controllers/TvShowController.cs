@@ -4,21 +4,36 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TvShowTracker.Api.Data;
 using TvShowTracker.Api.Models;
+using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
 
-
+/// <summary>
+/// Controller for managing TV show-related operations such as retrieving details and exporting PDFs.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
-
 public class TvShowController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ApplicationDbContext _context;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TvShowController"/> class.
+    /// </summary>
+    /// <param name="userManager">The user manager used to retrieve user information.</param>
+    /// <param name="context">The database context for accessing TV show data.</param>
     public TvShowController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
     {
         _userManager = userManager;
         _context = context;
     }
 
+    /// <summary>
+    /// Retrieves a TV show by its ID.
+    /// </summary>
+    /// <param name="tvShowId">The unique identifier of the TV show.</param>
+    /// <returns>An <see cref="IActionResult"/> containing the TV show data or a 404 if not found.</returns>
     [HttpGet("GetTvShowByID/{tvShowId}")]
     public async Task<IActionResult> GetTvShowByID([FromRoute] int tvShowId)
     {
@@ -29,6 +44,11 @@ public class TvShowController : ControllerBase
         return Ok(dto);
     }
 
+    /// <summary>
+    /// Exports a TV show as a PDF document by its ID.
+    /// </summary>
+    /// <param name="tvShowId">The unique identifier of the TV show.</param>
+    /// <returns>An <see cref="IActionResult"/> containing the PDF file or a 404 if not found.</returns>
     [HttpGet("{tvShowId}/export-pdf")]
     public async Task<IActionResult> ExportTvShowPdf([FromRoute] int tvShowId)
     {
@@ -41,6 +61,12 @@ public class TvShowController : ControllerBase
         return File(pdfBytes, "application/pdf", $"{dto.Name}.pdf");
     }
 
+    /// <summary>
+    /// Builds a <see cref="TvShowDto"/> from the database for a specific TV show and user.
+    /// </summary>
+    /// <param name="tvShowId">The ID of the TV show to build.</param>
+    /// <param name="user">The current authenticated user, if any.</param>
+    /// <returns>A <see cref="TvShowDto"/> with details, cast, directors, genres, and favorite status, or null if not found.</returns>
     private async Task<TvShowDto?> BuildTvShowDto(int tvShowId, ApplicationUser? user)
     {
         var tvShow = await _context.TvShows.FirstOrDefaultAsync(t => t.Id == tvShowId);

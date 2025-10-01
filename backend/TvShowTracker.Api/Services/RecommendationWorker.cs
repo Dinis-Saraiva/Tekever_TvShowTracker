@@ -2,33 +2,38 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using TvShowTracker.Api.Data;
 using TvShowTracker.Api.Models;
 
+/// <summary>
+/// A background worker service that periodically generates and sends TV show recommendations to users via email.
+/// </summary>
 public class RecommendationWorker : BackgroundService
 {
-    /*  private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
-     private readonly RecommendationService _recommendationService; */
     private readonly IServiceProvider _services;
 
-    public RecommendationWorker(
-        /* IDbContextFactory<ApplicationDbContext> dbContextFactory,
-        RecommendationService recommendationService, */
-        IServiceProvider services
-
-        )
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RecommendationWorker"/> class.
+    /// </summary>
+    /// <param name="services">The service provider used to create scoped services.</param>
+    public RecommendationWorker(IServiceProvider services)
     {
-        /*  _dbContextFactory = dbContextFactory;
-         _recommendationService = recommendationService; */
         _services = services;
-
     }
 
+    /// <summary>
+    /// Executes the background service logic, periodically sending recommendations to all users.
+    /// </summary>
+    /// <param name="stoppingToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A <see cref="Task"/> representing the background execution.</returns>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-           Console.WriteLine($"RecommendationWorker running at: {DateTimeOffset.Now}");
+            Console.WriteLine($"RecommendationWorker running at: {DateTimeOffset.Now}");
 
             using var scope = _services.CreateScope();
             var recommendationService = scope.ServiceProvider.GetRequiredService<RecommendationService>();
@@ -42,10 +47,7 @@ public class RecommendationWorker : BackgroundService
                 await recommendationService.sendEmailRecomendations(user);
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
+            await Task.Delay(TimeSpan.FromHours(30), stoppingToken);
         }
     }
-
-
-
 }

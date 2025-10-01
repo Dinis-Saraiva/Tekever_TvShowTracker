@@ -1,12 +1,24 @@
-/* using System.Globalization;
+using System;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 using TvShowTracker.Api.Data;
 using TvShowTracker.Api.Models;
+using System.Collections.Generic;
 
+/// <summary>
+/// Provides functionality to import TV shows, genres, and people from a CSV file into the database.
+/// </summary>
 class CsvImporter
 {
+    /// <summary>
+    /// Imports TV shows from a CSV file and populates the database with TV shows, directors, cast, and genres.
+    /// </summary>
+    /// <param name="filePath">The path to the CSV file containing TV show data.</param>
+    /// <param name="context">The database context used to save TV shows and related data.</param>
     public static void ImportTvShows(string filePath, ApplicationDbContext context)
     {
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -35,12 +47,14 @@ class CsvImporter
                 Seasons = ParseSeasons(record.Duration),
                 ImageUrl = "",
                 Rating = ParseRating(record.Rating),
-                //Genre = record.Type,
             };
+
             context.TvShows.Add(tvShow);
+
             helperFunctionAddPerson(context, record.Director, tvShow, JobTitle.Director);
             helperFunctionAddPerson(context, record.Cast, tvShow, JobTitle.Actor);
-            // Handle Genres
+
+            // Handle genres
             if (!string.IsNullOrEmpty(record.Type))
             {
                 var genreNames = ((string)record.Type)
@@ -66,12 +80,19 @@ class CsvImporter
                 }
             }
         }
+
         // Save everything once
         context.SaveChanges();
-
     }
 
-    static void helperFunctionAddPerson (ApplicationDbContext context,string names, TvShow tvShow, JobTitle role)
+    /// <summary>
+    /// Helper method to add people (directors or actors) to the database and associate them with a TV show.
+    /// </summary>
+    /// <param name="context">The database context.</param>
+    /// <param name="names">Comma-separated names of people.</param>
+    /// <param name="tvShow">The TV show to associate with.</param>
+    /// <param name="role">The role of the person in the TV show (Actor or Director).</param>
+    static void helperFunctionAddPerson(ApplicationDbContext context, string names, TvShow tvShow, JobTitle role)
     {
         if (!string.IsNullOrEmpty(names))
         {
@@ -88,16 +109,24 @@ class CsvImporter
                     person = new Person { Name = name };
                     context.Person.Add(person);
                 }
+
+                /* Uncomment if WorkedOn relationship should be tracked
                 var workedOn = new WorkedOn
                 {
                     Name = person,
                     TvShow = tvShow,
                     Role = role
                 };
-                context.WorkedOns.Add(workedOn);
+                context.WorkedOns.Add(workedOn); */
             }
         }
     }
+
+    /// <summary>
+    /// Parses the duration string to determine the number of seasons.
+    /// </summary>
+    /// <param name="duration">The duration string from CSV (e.g., "3 Seasons").</param>
+    /// <returns>The number of seasons as an integer.</returns>
     static int ParseSeasons(string duration)
     {
         if (string.IsNullOrEmpty(duration)) return 0;
@@ -110,25 +139,28 @@ class CsvImporter
 
         return 0;
     }
-    
-    // Helper method to parse string to Rating enum
-private static Rating ParseRating(string ratingString)
-{
-    if (string.IsNullOrWhiteSpace(ratingString))
-        return Rating.other;
+
+    /// <summary>
+    /// Parses a rating string into a <see cref="Rating"/> enum.
+    /// </summary>
+    /// <param name="ratingString">The rating string from CSV (e.g., "TV-MA").</param>
+    /// <returns>The corresponding <see cref="Rating"/> enum value.</returns>
+    private static Rating ParseRating(string ratingString)
+    {
+        if (string.IsNullOrWhiteSpace(ratingString))
+            return Rating.other;
 
         ratingString = ratingString.Trim().ToUpper();
 
-    return ratingString switch
-    {
-        "TV-MA" => Rating.TV_MA,
-        "TV-14" => Rating.TV_14,
-        "TV-Y7" => Rating.TV_Y7,
-        "TV-PG" => Rating.TV_PG,
-        "TV-G" => Rating.TV_G,
-        "TV-Y" => Rating.TV_Y,
-        _ => Rating.other
-    };
+        return ratingString switch
+        {
+            "TV-MA" => Rating.TV_MA,
+            "TV-14" => Rating.TV_14,
+            "TV-Y7" => Rating.TV_Y7,
+            "TV-PG" => Rating.TV_PG,
+            "TV-G" => Rating.TV_G,
+            "TV-Y" => Rating.TV_Y,
+            _ => Rating.other
+        };
+    }
 }
-}
- */
