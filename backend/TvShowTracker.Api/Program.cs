@@ -46,9 +46,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.SetMinimumLevel(LogLevel.Information);
 
 
 builder.Services.AddControllers();
@@ -67,7 +64,9 @@ builder.Services
     .AddProjections();
     
 
-
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<RecommendationService>();
+builder.Services.AddHostedService<RecommendationWorker>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.CsvImporter.ImportTvShows("data.csv", db);
@@ -76,14 +75,14 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-using (var scope = app.Services.CreateScope())
+/* using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.EnsureCreated();
     TvShowVectorCalculator.CalculateVectors(db);
-    //CsvImporter.ImportTvShows("tvshows.csv", db);
+    CsvImporter.ImportTvShows("tvshows.csv", db);
  
-}
+} */
 
 /*  using (var scope = app.Services.CreateScope())
 {
