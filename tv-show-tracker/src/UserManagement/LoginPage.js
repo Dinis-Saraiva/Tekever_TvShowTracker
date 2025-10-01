@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { UserContext } from './UserContext';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
@@ -10,19 +10,23 @@ const LoginPage = () => {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  const { handleLogin } = useContext(UserContext);
+  const { handleLogin, user } = useContext(UserContext);
   const navigate = useNavigate();
 
   const onSubmit = async (e) => {
     e.preventDefault();
     const data = await handleLogin(username, password);
-    if (data.success && data.user) {
+    if (data.user) {
       navigate('/');
     } else {
       setError(data.message);
       setShowModal(true);
     }
   };
+
+  useEffect(() => {
+  if (user) navigate('/');
+}, [user, navigate]);
 
   return (
     <div className="container mt-4" style={{ maxWidth: '400px' }}>
