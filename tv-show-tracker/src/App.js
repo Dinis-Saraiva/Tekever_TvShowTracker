@@ -11,28 +11,17 @@ import PeoplePage from './People/PeoplePage';
 import Favorites from './Favorites';
 
 const App = () => {
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-
-  const handleLogin = (username) => {
-    setUser({ name: username });
-    navigate('/'); // go to home after login
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    navigate('/'); // go to home after logout
-  };
 
   return (
     <>
-      <Header user={user} onLoginClick={() => navigate('/login')} onRegisterClick={() => navigate('/register')} onLogoutClick={handleLogout} />
+      <Header/>
       <div className="container mt-4">
         <Routes>
-          <Route path="/" element={<HomePage user={user} />} />
-          <Route path="/tvshows" element={<TvShowPage user={user} />} />
+          <Route path="/" element={<HomePage/>} />
+          <Route path="/tvshows" element={<TvShowPage/>} />
           <Route path="/show/:id" element={<TvShowDetail />} />
-          <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+          <Route path="/login" element={<LoginPage/>} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/people" element={<PeoplePage />}/>
           <Route path="/person/:id" element={<PersonPage/>} />

@@ -1,10 +1,13 @@
-import React, { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { UserContext } from './UserManagement/UserContext';
 import { Button, Navbar, Nav, Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
   const { user, handleLogout } = useContext(UserContext);
+  useEffect(() => {
+    console.log("User changed:", user);
+  }, [user]);
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg">
@@ -13,7 +16,6 @@ const Header = () => {
         <Navbar.Toggle />
         <Navbar.Collapse>
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">Home</Nav.Link>
             <Nav.Link as={Link} to="/tvshows">TV Shows</Nav.Link>
             <Nav.Link as={Link} to="/people">People</Nav.Link>
             <Nav.Link as={Link} to="/favorites">Favorites</Nav.Link>
