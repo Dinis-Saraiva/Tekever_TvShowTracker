@@ -1,51 +1,80 @@
-using Microsoft.Extensions.Logging;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using System;
 using System.Threading.Tasks;
 
 /// <summary>
-/// Defines the contract for sending emails asynchronously.
+/// Defines the contract for sending emails.
 /// </summary>
 public interface IEmailService
 {
     /// <summary>
-    /// Sends an email asynchronously.
+    /// Sends an email asynchronously with both plain text and HTML content.
     /// </summary>
-    /// <param name="to">The recipient's email address.</param>
-    /// <param name="subject">The subject line of the email.</param>
-    /// <param name="body">The body content of the email.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    Task SendEmailAsync(string to, string subject, string body);
+    /// <param name="to">The recipient email address.</param>
+    /// <param name="subject">The subject of the email.</param>
+    /// <param name="body">The plain text body of the email.</param>
+    /// <param name="htmlBody">The HTML body of the email (optional, falls back to plain text if null).</param>
+    Task SendEmailAsync(string to, string subject, string body, string htmlBody);
 }
 
 /// <summary>
-/// A basic implementation of <see cref="IEmailService"/> that logs emails to the console.
-/// Replace with real SMTP, SendGrid, or other email provider for production use.
+/// Implementation of <see cref="IEmailService"/> using SendGrid for sending emails.
 /// </summary>
 public class EmailService : IEmailService
 {
-    private readonly ILogger<EmailService> _logger;
+    private readonly string _sendGridApiKey;
+    private readonly string _fromEmail;
+    private readonly string _fromName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EmailService"/> class.
     /// </summary>
-    /// <param name="logger">The logger used to log email sending actions.</param>
-    public EmailService(ILogger<EmailService> logger)
+    /// <param name="sendGridApiKey">The SendGrid API key.</param>
+    /// <param name="fromEmail">The sender email address.</param>
+    /// <param name="fromName">The sender display name. Defaults to "No-Reply".</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="sendGridApiKey"/> or <paramref name="fromEmail"/> is null.
+    /// </exception>
+    public EmailService(string sendGridApiKey, string fromEmail, string fromName = "No-Reply")
     {
-        _logger = logger;
+        _sendGridApiKey = sendGridApiKey ?? throw new ArgumentNullException(nameof(sendGridApiKey));
+        _fromEmail = fromEmail ?? throw new ArgumentNullException(nameof(fromEmail));
+        _fromName = fromName;
     }
 
     /// <summary>
-    /// Sends an email asynchronously. Currently logs the email details to the console.
+    /// Sends an email asynchronously using SendGrid.
     /// </summary>
-    /// <param name="to">The recipient's email address.</param>
-    /// <param name="subject">The subject line of the email.</param>
-    /// <param name="body">The body content of the email.</param>
-    /// <returns>A completed <see cref="Task"/>.</returns>
-    public Task SendEmailAsync(string to, string subject, string body)
+    /// <param name="to">The recipient email address.</param>
+    /// <param name="subject">The subject of the email.</param>
+    /// <param name="plainTextBody">The plain text content of the email.</param>
+    /// <param name="htmlBody">The HTML content of the email (optional, falls back to plain text if null).</param>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="to"/> is null or whitespace.</exception>
+    /// <exception cref="Exception">Thrown when the SendGrid API request fails.</exception>
+    public async Task SendEmailAsync(string to, string subject, string plainTextBody, string htmlBody)
     {
-        // Replace this with SMTP/SendGrid/etc
-        Console.WriteLine("Sending email to {0} with subject {1} and body {2}", to, subject, body);
+        if (string.IsNullOrWhiteSpace(to))
+            throw new ArgumentException("Recipient email is required.", nameof(to));
 
-        return Task.CompletedTask;
+        var client = new SendGridClient(_sendGridApiKey);
+        var from = new EmailAddress(_fromEmail, _fromName);
+        var toEmail = new EmailAddress(to);
+
+        var msg = MailHelper.CreateSingleEmail(
+            from,
+            toEmail,
+            subject,
+            plainTextContent: plainTextBody,
+            htmlContent: htmlBody ?? plainTextBody
+        );
+
+        var response = await client.SendEmailAsync(msg);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var responseBody = await response.Body.ReadAsStringAsync();
+            throw new Exception($"Failed to send email. Status: {response.StatusCode}, Response: {responseBody}");
+        }
     }
 }

@@ -52,14 +52,20 @@ public class RecommendationService
             .Take(5)
             .Select(f => f.TvShow)
             .ToList();
-
+        
         var recommendations = getSimilarShows(randomFavorites, 10);
+        var htmlBody = $@"
+            <h2>We picked 10 of your favorites!</h2>
+            <p>Here are your recommendations:</p>
+            <ul>
+                {string.Join("<br>", recommendations.Select(r => $"<li>{r.Item1.Name} (Score: {r.Score:F2})</li>"))}
+            </ul>";
 
         var body = "We picked 10 of your favorites, and here are your recommendations:\n" +
                    string.Join("\n", recommendations.Select(r => $"{r.Item1.Name} (Score: {r.Score:F2})"));
 
         if (!string.IsNullOrEmpty(user.Email))
-            await _emailService.SendEmailAsync(user.Email, "Your TV Show Recommendations", body);
+            await _emailService.SendEmailAsync(user.Email, "Your TV Show Recommendations", body,htmlBody);
     }
 
     /// <summary>
