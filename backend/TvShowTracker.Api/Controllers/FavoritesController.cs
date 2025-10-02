@@ -87,7 +87,7 @@ public class FavoritesController : ControllerBase
         _context.FavoriteTvShows.Add(new FavoriteTvShows { User = user, TvShow = tvShow });
         await _context.SaveChangesAsync();
 
-        return Ok(new { message = $"{tvShow} TV show added to favorites" });
+        return Ok(new { message = $"{tvShowIds} TV show added to favorites" });
     }
 
     /// <summary>
