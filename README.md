@@ -48,7 +48,7 @@ A full-stack application for browsing, managing, and getting recommendations for
   cd tv-show-tracker
   npm start
   ```
-4. Run Backend at https://localhost:7211
+4. Run Backend at http://localhost:5133
   ```sh
   cd backend/TvShowTracker.Api
   dotnet run
