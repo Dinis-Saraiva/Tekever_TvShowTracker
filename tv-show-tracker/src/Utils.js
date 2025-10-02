@@ -11,7 +11,7 @@ class Utils {
     };
 
     static getImageUrl = (path) => {
-        return path ? `https://localhost:7211/${path}`:'https://via.placeholder.com/300x400?text=No+Image';}
+        return path ? `http://localhost:5133/${path}`:'https://via.placeholder.com/300x400?text=No+Image';}
 
 }
 

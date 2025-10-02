@@ -91,7 +91,7 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // Endpoints
 app.MapControllers();
