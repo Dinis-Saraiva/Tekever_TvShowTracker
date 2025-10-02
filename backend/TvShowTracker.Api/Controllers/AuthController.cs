@@ -36,10 +36,13 @@ public class AuthController : ControllerBase
         var user = new ApplicationUser { UserName = dto.Username, Email = dto.Email };
         var result = await _userManager.CreateAsync(user, dto.Password);
 
+
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
-        return Ok(new { message = "User registered successfully" });
+        await _signInManager.SignInAsync(user, isPersistent: false);
+
+        return Ok(new { user = new { id = user.Id, username = user.UserName, email = user.Email } });
     }
 
     /// <summary>
@@ -95,4 +98,28 @@ public class AuthController : ControllerBase
 
         return Ok(new { user = new { id = user.Id, username = user.UserName, email = user.Email } });
     }
+
+    /// <summary>
+    /// Deletes a user by their ID.
+    /// </summary>
+    /// <param name="id">The ID of the user to delete.</param>
+    /// <returns>An <see cref="IActionResult"/> indicating success or failure.</returns>
+    [Authorize]
+    [HttpDelete("delete")]
+    public async Task<IActionResult> DeleteUser()
+    {
+        var username = User.Identity?.Name;
+        if (string.IsNullOrEmpty(username))
+            return Unauthorized("No user logged in");
+        var user = await _userManager.FindByNameAsync(username);
+        if (user == null)
+                return NotFound(new { message = "User not found" });
+        // Delete the user
+        var result = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
+
+        return Ok(new { message = "User deleted successfully" });
+    }
+
 }
