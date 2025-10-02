@@ -42,6 +42,7 @@ A full-stack application for browsing, managing, and getting recommendations for
   ```sh
   setup.bat
   ```
+3. Swap the .envExample for the .env sent in the email
 3. Run Frontend at http://localhost:3000/
   ```sh
   cd tv-show-tracker
