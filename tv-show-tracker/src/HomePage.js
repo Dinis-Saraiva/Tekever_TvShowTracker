@@ -15,8 +15,8 @@ const HomePage = () => (
       exports to CSV/PDF.
     </p>
     <p>
-      Technologies and practices used include SOLID principles, Entity Framework, functional programming, cryptography, 
-      dependency injection, unit & integration tests, and optional GraphQL and AI/ML integration.
+      Technologies and practices used include SOLID principles, Entity Framework, functional programming, 
+      dependency injection, unit & integration tests and GraphQL.
     </p>
     <p>
       This project was done by <a href="https://github.com/Dinis-Saraiva" target="_blank" rel="noopener noreferrer">Dinis Saraiva</a>.
