@@ -36,7 +36,7 @@ A full-stack application for browsing, managing, and getting recommendations for
 
 1. Clone the repo
   ```sh
-  git clone https://github.com/github_username/repo_name.git
+  git clone https://github.com/Dinis-Saraiva/Tekever_TvShowTracker.git
   ```
 2. Install Packages      
   ```sh
