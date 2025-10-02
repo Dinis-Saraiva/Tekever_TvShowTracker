@@ -43,3 +43,14 @@ export const getCurrentUser = async () => {
     return { success: false, user: null };
   }
 };
+//Delete User
+export const deleteCurrentUser = async() =>{
+  try{
+    const response = await api.delete('auth/delete');
+    return {success:true};
+  }catch(error){
+    console.error('Error Deleting User');
+    return{success:false};
+  }
+};
+

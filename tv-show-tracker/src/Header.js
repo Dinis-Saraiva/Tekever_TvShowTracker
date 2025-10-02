@@ -4,7 +4,7 @@ import { Button, Navbar, Nav, Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
-  const { user, handleLogout } = useContext(UserContext);
+  const { user, handleLogout,handleUserDelete } = useContext(UserContext);
   useEffect(() => {
     console.log("User changed:", user);
   }, [user]);
@@ -25,6 +25,7 @@ const Header = () => {
               <>
                 <Navbar.Text className="me-2">Signed in as: {user.username}</Navbar.Text>
                 <Button variant="outline-light" onClick={handleLogout}>Logout</Button>
+                <Button variant="outline-light" onClick={handleUserDelete}>Delete User</Button>
               </>
             ) : (
               <>

@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { login, logout, register, getCurrentUser } from '../Enpoints/Authentication';
+import { createContext, useState, useEffect } from 'react';
+import { login, logout, register, getCurrentUser, deleteCurrentUser } from '../Enpoints/Authentication';
 
 export const UserContext = createContext();
 
@@ -33,8 +33,14 @@ export const UserProvider = ({ children }) => {
     return data;
   };
 
+  const handleUserDelete= async () => {
+    const data = await deleteCurrentUser();
+    if (data.success) setUser(null);
+    return data;
+  };
+
   return (
-    <UserContext.Provider value={{ user, loading, handleLogin, handleRegister, handleLogout }}>
+    <UserContext.Provider value={{ user, loading, handleLogin, handleRegister, handleLogout, handleUserDelete }}>
       {children}
     </UserContext.Provider>
   );
