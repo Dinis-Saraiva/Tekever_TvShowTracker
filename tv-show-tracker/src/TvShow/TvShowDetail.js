@@ -15,6 +15,26 @@ const TvShowDetail = () => {
   const [pageInfo, setPageInfo] = useState({ hasNextPage: false, hasPreviousPage: false, startCursor: null, endCursor: null });
   const EPISODES_PER_PAGE = 20;
 
+
+   const fetchEpisodes = async ({ before = null, after = null, first = EPISODES_PER_PAGE, last = EPISODES_PER_PAGE } = {}) => {
+    setLoadingEpisodes(true);
+    try {
+
+      const variables = { tvShowId: Number(id), first, after, last, before };
+      const res = await graphql(GET_EPISODES_BY_TVSHOW_ID, variables);
+      const edges = res.data.episodesByTvShowId.edges;
+
+      setEpisodes(edges.map(edge => edge.node));
+      const info = res.data.episodesByTvShowId.pageInfo;
+
+      setPageInfo(info);
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingEpisodes(false);
+    }
+  };
   useEffect(() => {
     const fetchShow = async () => {
       try {
@@ -40,27 +60,6 @@ const TvShowDetail = () => {
       alert(result.message);
     }
   };
-
-  const fetchEpisodes = async ({ before = null, after = null, first = EPISODES_PER_PAGE, last = EPISODES_PER_PAGE } = {}) => {
-    setLoadingEpisodes(true);
-    try {
-
-      const variables = { tvShowId: Number(id), first, after, last, before };
-      const res = await graphql(GET_EPISODES_BY_TVSHOW_ID, variables);
-      const edges = res.data.episodesByTvShowId.edges;
-
-      setEpisodes(edges.map(edge => edge.node));
-      const info = res.data.episodesByTvShowId.pageInfo;
-
-      setPageInfo(info);
-
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingEpisodes(false);
-    }
-  };
-
 
   if (!show) return (
     <div className="d-flex justify-content-center align-items-center" style={{ height: '80vh' }}>

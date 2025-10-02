@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { graphql } from '../Enpoints/api';
 import { GET_PERSON_BY_PERSONID } from '../queries';
-import { Card, Row, Col, Badge, Spinner, ListGroup, Button } from 'react-bootstrap';
+import { Card, Row, Col, Badge, Spinner, ListGroup} from 'react-bootstrap';
 import utils from '../Utils';
 
 const PersonPage = () => {

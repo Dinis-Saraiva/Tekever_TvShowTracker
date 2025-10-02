@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route} from 'react-router-dom';
 import Header from './Header';
 import HomePage from './HomePage';
 import LoginPage from './UserManagement/LoginPage';
@@ -11,8 +10,7 @@ import PeoplePage from './People/PeoplePage';
 import Favorites from './Favorites';
 
 const App = () => {
-  const navigate = useNavigate();
-
+ 
   return (
     <>
       <Header/>

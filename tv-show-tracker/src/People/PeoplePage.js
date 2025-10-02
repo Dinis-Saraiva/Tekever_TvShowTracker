@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Row, Col, Button, Form, InputGroup } from 'react-bootstrap';
 import { graphql } from '../Enpoints/api';
 import { GET_PEOPLE_PAGINATED } from '../queries';
