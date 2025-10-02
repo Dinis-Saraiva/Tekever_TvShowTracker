@@ -20,7 +20,12 @@ const RegisterPage = () => {
     if (data.success && data.user) {
       navigate('/');
     } else {
-      setError(data.message);
+      if (Array.isArray(data.message)) {
+        const errorMessages = data.message.map(err => err.description).join('\n');
+        setError(errorMessages);
+      } else {
+        setError(data.message || 'Registration failed.');
+      }
       setShowModal(true);
     }
   };

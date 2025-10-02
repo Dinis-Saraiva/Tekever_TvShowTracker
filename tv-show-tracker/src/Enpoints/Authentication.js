@@ -18,7 +18,7 @@ export const register = async (username, email, password) => {
     return { success: true, user: response.data.user };
   } catch (error) {
     console.error('Register error:', error);
-    return { success: false, message: error.response?.data?.message || 'Registration failed' };
+    return { success: false, message: error.response?.data || 'Registration failed' };
   }
 };
 
@@ -47,7 +47,7 @@ export const getCurrentUser = async () => {
 export const deleteCurrentUser = async() =>{
   try{
     const response = await api.delete('auth/delete');
-    return {success:true};
+    return {success:true,message:response.message};
   }catch(error){
     console.error('Error Deleting User');
     return{success:false};
